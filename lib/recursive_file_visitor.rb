@@ -1,6 +1,8 @@
 require('fileutils')
 require('find')
 
+require __FILE__ + '/../ignore_file'
+
 class RecursiveFileVisitor
 
   def visit(filter, &block)
@@ -9,35 +11,18 @@ class RecursiveFileVisitor
     fullPathFilter = File.join(FileUtils.pwd(), "..")
 
     # load the ignore array if needed
-    ignoreFilter = []
-    ignoreFile = File.join(FileUtils.pwd(), ".xctignore")
-    if (FileTest.exist?(ignoreFile))
-      ignoreFilter = File.readlines(ignoreFile)
-      ignoreFilter = ignoreFilter.map{ |ie|
-        ie.chop
-      }
-      p "Ignore list is set to: #{ignoreFilter}"
-    end
+    ignoreFile = IgnoreFile.new(File.join(FileUtils.pwd(), ".xctignore"))
 
+    # find the files
     Find.find(fullPathFilter) do |path|
 
       # Check if the file is part of the filter
-      if FileTest.directory?(path) || !path.end_with?(filter)
-        next
-      end
+      next if FileTest.directory?(path) || !path.end_with?(filter)
 
       # check if
-      ignoreFile = false
-      ignoreFilter.each do |ignoreFilterElement|
-        if (path.include?(ignoreFilterElement))
-          ignoreFile = true
-        end
-      end
+      next if ignoreFile.needToIgnore(path)
 
-      if (ignoreFile)
-        next
-      end
-
+      # call our visitor block
       block.call(path)
     end
   end

@@ -54,14 +54,10 @@ class PseudoTranslationManager
     fileVisitor.visit(".strings") do |fullFileName|
 
       # check if we are part of the target language
-      if (!fullFileName.include?(targetLanguageDirectory))
-        next
-      end
+      next if (!fullFileName.include?(targetLanguageDirectory))
 
       # check if we can ignore file
-      if (fullFileName.include?("Pods") || fullFileName.include?("vendor") || fullFileName.include?("external"))
-        next
-      end
+      next if (fullFileName.include?("Pods") || fullFileName.include?("vendor") || fullFileName.include?("external"))
 
       # line number
       lineNumber = 0
