@@ -1,4 +1,4 @@
-class PseudoTranslationManager
+class TranslationManagerPseudo
 
   def applyPseudoTranslationInLine(line, targetLanguage)
     # check if we have a valid value
@@ -44,7 +44,7 @@ class PseudoTranslationManager
     end
   end
 
-  def performPseudoTranslation(targetLanguage)
+  def perform(targetLanguage)
 
     # define the lang directory
     targetLanguageDirectory = targetLanguage + ".lproj"
