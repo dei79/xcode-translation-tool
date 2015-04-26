@@ -16,16 +16,25 @@ options = {}
 optparser = OptionParser.new do |opts|
   opts.banner = "Usage: xt-tool [options]"
 
-  opts.on('-p', '--pseudo TARGETLANGUAGE', 'Creates a pseudo translation in target langauge') { |v| options[:action] = :pseudo; options[:target] = v }
-  opts.on('-m', '--missing TARGETLANGUAGE', 'Updates the strings of the target language by the missing strings from the base language') { |v| options[:action] = :update_missing; options[:target] = v }
+  opts.on('-p', '--project PROJECT', 'The project file')  { |v| options[:project] = v }
+  opts.on('-t', '--target TARGETLANGUAGE', 'The target langauge') { |v| options[:target] = v }
+  opts.on('-s', '--pseudo', 'Pseudo translation') { |v| options[:action] = :pseudo }
+  opts.on('-u', '--update', 'Updates the strings of the target language by the missing strings from the base language') { |v| options[:action] = :update_missing }
 end
 optparser.parse!
 
-# generate the target language indicator
+# generate the target language indicator and the project file
+action = options[:action]
+projectFile = options[:project]
 targetLanguage = options[:target].downcase
 
+unless projectFile || targetLanguage || action
+  p "Missing parameter"
+  exit 1
+end
+
 # perform the correct action
-case options[:action]
+case action
 
   when :pseudo
     # start the translation
@@ -34,7 +43,7 @@ case options[:action]
   when :update_missing
     # start the update
     updateManager = TranslationManagerUpdate.new()
-    updateManager.perform(targetLanguage);
+    updateManager.perform(projectFile, targetLanguage);
   else
     p "Not a valid action"
     p options
